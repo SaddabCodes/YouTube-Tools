@@ -34,24 +34,29 @@
             background-clip: text;
             color: transparent;
         }
+
         .gradient-header {
-            background: linear-gradient(135deg, rgba(37,99,235,.08), rgba(34,197,94,.08));
+            background: linear-gradient(135deg, rgba(37, 99, 235, .08), rgba(34, 197, 94, .08));
             border: 1px dashed #e2e8f0;
         }
+
         .thumb-box {
             border: 1px solid #e2e8f0;
             border-radius: 12px;
             overflow: hidden;
             transition: border-color 0.3s ease;
         }
+
         .error {
             background: rgba(239, 68, 68, 0.12);
             color: #ef4444;
             border-left: 4px solid #ef4444;
         }
+
         .dark .gradient-header {
             border-color: #334155;
         }
+
         .dark .thumb-box {
             border-color: #334155;
         }
@@ -92,7 +97,8 @@
     </div>
 
     <!-- ✅ Thumbnail Result -->
-    <div th:if="${thumbnailUrl}" class="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-lg p-6 mb-8">
+    <div th:if="${thumbnailUrl}"
+         class="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-lg p-6 mb-8">
         <h2 class="text-xl font-semibold text-slate-900 dark:text-slate-100 mb-4">High Quality Thumbnail (1280x720)</h2>
         <div class="flex justify-end mb-4">
             <button type="button"
@@ -109,7 +115,7 @@
 </div>
 <script>
     function downloadImage(url, filename) {
-        fetch(url, { mode: 'cors' })
+        fetch(url, {mode: 'cors'})
             .then(response => response.blob())
             .then(blob => {
                 const link = document.createElement('a');
