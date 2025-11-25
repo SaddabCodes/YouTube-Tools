@@ -2,6 +2,7 @@ package com.sadcodes.youtubetools.service;
 
 import com.sadcodes.youtubetools.model.SearchVideo;
 import com.sadcodes.youtubetools.model.Video;
+import com.sadcodes.youtubetools.model.VideoDetails;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import org.springframework.beans.factory.annotation.Value;
@@ -39,7 +40,7 @@ public class YoutubeService {
                     .build();
         }
         String primaryVideoId = videoId.get(0);
-        List<String> relatedVideoIds = videoId.subList(1, Math.min(videoId.size(), maxRelatedVideos));
+        List<String> relatedVideoIds = videoId.subList(1, Math.min(videoId.size(), maxRelatedVideos + 1));
 
         Video primaryVideo = getVideoById(primaryVideoId);
 
@@ -60,13 +61,24 @@ public class YoutubeService {
                 .get()
                 .uri(uriBuilder -> uriBuilder
                         .path("videos")
-                        .queryParam("part", "snipper")
+                        .queryParam("part", "snippet")
                         .queryParam("id", videoId)
                         .queryParam("key", apiKey)
                         .build())
                 .retrieve()
                 .bodyToMono(VideoApiResponse.class)
                 .block();
+
+        if (response == null || response.items == null) {
+            return null;
+        }
+        Snippet snippet = response.items.get(0).snippet;
+        return Video.builder()
+                .id(videoId)
+                .channelTitle(snippet.channelTitle)
+                .title(snippet.title)
+                .tags(snippet.tags == null ? Collections.emptyList() : snippet.tags)
+                .build();
     }
 
     private List<String> searchForVideoIds(String videoTitle) {
@@ -93,6 +105,36 @@ public class YoutubeService {
             videoIds.add(item.id.videoId);
         }
         return videoIds;
+    }
+
+    public VideoDetails getVideoDetails(String videoId) {
+        VideoApiResponse response = webClientBuilder
+                .baseUrl(baseUrl).build()
+                .get()
+                .uri(uriBuilder -> uriBuilder
+                        .path("videos")
+                        .queryParam("part", "snippet")
+                        .queryParam("id", videoId)
+                        .queryParam("key", apiKey)
+                        .build())
+                .retrieve()
+                .bodyToMono(VideoApiResponse.class)
+                .block();
+
+        if (response == null || response.items == null) {
+            return null;
+        }
+        Snippet snippet = response.items.get(0).snippet;
+        String thumbnailUrl = snippet.thumbnails.getBestThumbnaiIlJrI();
+        return VideoDetails.builder()
+                .id(videoId)
+                .title(snippet.title)
+                .description(snippet.description)
+                .tags(snippet.tags == null ? Collections.emptyList() : snippet.tags)
+                .thumbnailUrl(thumbnailUrl)
+                .channelTitle(snippet.channelTitle)
+                .publishedAt(snippet.publishedAt)
+                .build();
     }
 
     @Data
