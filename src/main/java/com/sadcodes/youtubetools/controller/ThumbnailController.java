@@ -15,7 +15,8 @@ public class ThumbnailController {
     private ThumbnailsService thumbnailsService;
 
     @GetMapping("/thumbnail")
-    public String getThumbnails() {
+    public String getThumbnails(Model model) {
+        model.addAttribute("activePage", "thumbnails");
         return "thumbnails";
     }
 
@@ -25,6 +26,7 @@ public class ThumbnailController {
         String videoId = thumbnailsService.extractVideoId(videoUrlOrId);
         if (videoId == null) {
             model.addAttribute("error", "Invalid Youtube URL");
+            model.addAttribute("activePage", "thumbnails");
             return "thumbnails";
         }
 
@@ -32,6 +34,7 @@ public class ThumbnailController {
 
         model.addAttribute("videoId", videoId);
         model.addAttribute("thumbnailUrl", thumbnailUrl);
+        model.addAttribute("activePage", "thumbnails");
 
         return "thumbnails";
     }

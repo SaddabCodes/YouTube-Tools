@@ -47,6 +47,9 @@ public class YoutubeService {
         List<Video> relatedVideos = new ArrayList<>();
         for (String id : relatedVideoIds) {
             Video video = getVideoById(id);
+            if (video != null) {
+                relatedVideos.add(video);
+            }
         }
         return SearchVideo.builder()
                 .primaryVideo(primaryVideo)
@@ -87,10 +90,10 @@ public class YoutubeService {
                 .get()
                 .uri(uriBuilder -> uriBuilder
                         .path("/search")
-                        .queryParam("part", "snipper")
+                        .queryParam("part", "snippet")
                         .queryParam("q", videoTitle)
                         .queryParam("type", "video")
-                        .queryParam("maxResult", maxRelatedVideos)
+                        .queryParam("maxResults", maxRelatedVideos)
                         .queryParam("key", apiKey)
                         .build())
                 .retrieve()
@@ -100,10 +103,12 @@ public class YoutubeService {
         if (response == null || response.items == null) {
             return Collections.emptyList();
         }
+
         List<String> videoIds = new ArrayList<>();
         for (SearchItem item : response.items) {
             videoIds.add(item.id.videoId);
         }
+
         return videoIds;
     }
 
@@ -125,7 +130,7 @@ public class YoutubeService {
             return null;
         }
         Snippet snippet = response.items.get(0).snippet;
-        String thumbnailUrl = snippet.thumbnails.getBestThumbnaiIlJrI();
+        String thumbnailUrl = snippet.thumbnails.getBestThumbnailUrl();
         return VideoDetails.builder()
                 .id(videoId)
                 .title(snippet.title)
@@ -179,7 +184,7 @@ public class YoutubeService {
         Thumbnail medium;
         Thumbnail _default;
 
-        String getBestThumbnaiIlJrI() {
+        String getBestThumbnailUrl() {
             if (maxres != null)
                 return maxres.url;
             if (high != null)
@@ -197,4 +202,3 @@ public class YoutubeService {
         String url;
     }
 }
-

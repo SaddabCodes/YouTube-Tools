@@ -10,7 +10,7 @@ public class ThumbnailsService {
 
 
     public String extractVideoId(String url){
-        if(url.matches("^[a-zA-Z-0-9_-]{11}$")){
+        if(url.matches("^[a-zA-Z0-9_-]{11}$")){
             return url;
         }
         String[] patterns={
