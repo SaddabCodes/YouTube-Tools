@@ -1,5 +1,8 @@
 package com.sadcodes.youtubetools.controller;
 
+import com.sadcodes.youtubetools.model.SearchVideo;
+import com.sadcodes.youtubetools.service.YoutubeService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -10,6 +13,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 @Controller
 @RequestMapping("/youtube")
 public class YoutubeTagsController {
+
+    @Autowired
+    private YoutubeService youtubeService;
 
     @Value("${youtube.api.key}")
     private String apiKey;
@@ -34,11 +40,15 @@ public class YoutubeTagsController {
             return "home";
         }
         try {
-
-        }catch (Exception e){
-
+            SearchVideo result = youtubeService.searchVideos(videoTitle);
+            model.addAttribute("primaryVideo", result.getPrimaryVideo());
+            model.addAttribute("relatedVideo", result.getRelatedVideos());
+            return "home";
+        } catch (Exception e) {
+            model.addAttribute("error", e.getMessage());
+            return "home";
         }
-        return null;
+//        return null;
 
 
     }
